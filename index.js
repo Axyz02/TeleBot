@@ -1,4 +1,4 @@
-const {Telegraf, Markup, Extra} = require('telegraf');
+const { Telegraf, Markup, Extra } = require('telegraf');
 const axios = require('axios');
 
 //Api key
@@ -16,11 +16,11 @@ const setValues = (json) => {
     avg = json.value_avg;
 }
 
-const getCotizacion = ()=> {
+const getCotizacion = () => {
     axios.get('https://api.bluelytics.com.ar/v2/latest')
-    .then(function (response){
-        setValues(response.data.blue);
-    })
+        .then(function (response) {
+            setValues(response.data.blue);
+        })
 }
 
 
@@ -33,22 +33,34 @@ bot.start(async ctx => {
 
 
 bot.help((ctx) => {
-    ctx.reply(`Hola, soy el Dolar bot!
+    bot.telegram.sendMessage(ctx.chat.id, `Hola, soy el Dolar bot!
 Mi proposito es darte la cotizacion del dolar en el momento.
-Estas son mis funciones:`,
-Markup.ReplyKeyboardMarkup
+Abajo vas a encontrar mis funciones.`, {
+        reply_markup: {
+            keyboard: [
+                [
+                { input_field_placeholder: "Compra",
+                    text: "/Compra" },
+                { text: "/Promedio" },
+                { text: "/Venta" }
+                ]
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: true
+        }
+    })
+}
 );
-})
 
-bot.command('now', (ctx) => {
+bot.command('Promedio', (ctx) => {
     ctx.reply(`Hola!
 El valor promedio es 💵 ${avg}`);
 })
-bot.command('sell', (ctx) => {
+bot.command('Venta', (ctx) => {
     ctx.reply(`Hola!
 El valor de venta es 💵 ${venta}`);
 })
-bot.command('buy', (ctx) => {
+bot.command('Compra', (ctx) => {
     ctx.reply(`Hola!
 El valor de compra es 💵 ${compra}`);
 })
