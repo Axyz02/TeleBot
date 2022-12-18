@@ -37,7 +37,18 @@ Abajo vas a encontrar mis funciones.`, {
                     { text: 'Venta', callback_data: 'venta' },
                 ]
             ]
-        }
+        },
+            reply_markup: {
+                keyboard: [
+                    [
+                    { text: "/compra" },
+                    { text: "/promedio" },
+                    { text: "/venta" }
+                    ]
+                ],
+                resize_keyboard: true,
+                one_time_keyboard: true
+            }
     })
 }
 );
@@ -94,3 +105,5 @@ bot.action("venta", ctx => {
 
 getCotizacion();
 bot.launch();
+
+
