@@ -23,50 +23,44 @@ const getCotizacion = () => {
         })
 }
 
+//? Defautl commands
 
 bot.start(async ctx => {
     const nombre = ctx.message.from.first_name;
-   // ctx.reply(`Hola ${nombre}, bienvenido!`);
     bot.telegram.sendMessage(ctx.chat.id, `Hola ${nombre}, bienvenido!
 Abajo vas a encontrar mis funciones.`, {
         reply_markup: {
-            keyboard: [
+            inline_keyboard: [
                 [
-                { input_field_placeholder: "Compra",
-                    text: "/Compra" },
-                { text: "/Promedio" },
-                { text: "/Venta" }
+                    { text: 'Compra', callback_data: 'compra' },
+                    { text: 'Promedio', callback_data: 'promedio' },
+                    { text: 'Venta', callback_data: 'venta' },
                 ]
-            ],
-            resize_keyboard: true,
-            one_time_keyboard: true
+            ]
         }
     })
 }
 );
-
-
-
 
 bot.help((ctx) => {
     bot.telegram.sendMessage(ctx.chat.id, `Hola, soy el Dolar bot!
 Mi proposito es darte la cotizacion del dolar en el momento.
-Abajo vas a encontrar mis funciones.`, {
-        reply_markup: {
-            keyboard: [
-                [
-                { input_field_placeholder: "Compra",
-                    text: "/compra" },
-                { text: "/promedio" },
-                { text: "/venta" }
+Abajo vas a encontrar mis funciones.`,
+        {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { text: 'Compra', callback_data: 'compra' },
+                        { text: 'Promedio', callback_data: 'promedio' },
+                        { text: 'Venta', callback_data: 'venta' },
+                    ]
                 ]
-            ],
-            resize_keyboard: true,
-            one_time_keyboard: true,
-        }
-    })
+            }
+        })
 }
 );
+
+//? Custom commands
 
 bot.command('promedio', (ctx) => {
     ctx.reply(`Hola!
@@ -79,6 +73,22 @@ La cotiazcion de venta es 💵 ${venta}`);
 bot.command('compra', (ctx) => {
     ctx.reply(`Hola!
 La cotiazcion de compra es 💵 ${compra}`);
+})
+
+
+//? Bot actions
+
+bot.action("compra", ctx => {
+    ctx.reply(`Hola!
+    La cotiazcion de compra es 💵 ${compra}`);
+})
+bot.action("promedio", ctx => {
+    ctx.reply(`Hola!
+    La cotiazcion promedio es 💵 ${avg}`);
+})
+bot.action("venta", ctx => {
+    ctx.reply(`Hola!
+    La cotiazcion de venta es 💵 ${venta}`);
 })
 
 
