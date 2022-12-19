@@ -47,7 +47,6 @@ Abajo vas a encontrar mis funciones.`, {
                     ]
                 ],
                 resize_keyboard: true,
-                one_time_keyboard: true
             }
     })
 }
