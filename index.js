@@ -1,108 +1,109 @@
-const { Telegraf, Markup, Extra } = require('telegraf');
-const axios = require('axios');
+const { Telegraf, Markup, Extra } = require("telegraf");
+const axios = require("axios");
 
 //Api key
-const bot = new Telegraf('5733932031:AAHYDbIEoSVAbHsoCQjzzNRZYAbsUQxfSF8');
+const bot = new Telegraf("5901908240:AAGNVy0wUXRO8ugW25B9qraRWY5ZxN4V_HM");
 
-
-let compra = undefined;
-let venta = undefined;
-let avg = undefined
-
+let values = [(compra = 0), (venta = 0), (avg = 0)];
 
 const setValues = (json) => {
-    compra = json.value_buy;
-    venta = json.value_sell;
-    avg = json.value_avg;
-}
+  values[0] = json.value_buy;
+  values[1] = json.value_sell;
+  values[2] = json.value_avg;
+};
 
-const getCotizacion = () => {
-    axios.get('https://api.bluelytics.com.ar/v2/latest')
-        .then(function (response) {
-            setValues(response.data.blue);
-        })
-}
+const getCotizacion = async () => {
+  axios
+    .get("https://api.bluelytics.com.ar/v2/latest")
+    .then(function (response) {
+      values[0] = response.data.blue.value_buy;
+      values[1] = response.data.blue.value_sell;
+      values[2] = response.data.blue.value_avg;
+      return values;
+    });
+};
 
-//? Defautl commands
+//? Default commands
 
-bot.start(async ctx => {
-    const nombre = ctx.message.from.first_name;
-    bot.telegram.sendMessage(ctx.chat.id, `Hola ${nombre}, bienvenido!
-Abajo vas a encontrar mis funciones.`, {
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: 'Compra', callback_data: 'compra' },
-                    { text: 'Promedio', callback_data: 'promedio' },
-                    { text: 'Venta', callback_data: 'venta' },
-                ]
-            ]
-        },
-            reply_markup: {
-                keyboard: [
-                    [
-                    { text: "/compra" },
-                    { text: "/promedio" },
-                    { text: "/venta" }
-                    ]
-                ],
-                resize_keyboard: true,
-            }
-    })
-}
-);
+bot.start(async (ctx) => {
+  const nombre = ctx.message.from.first_name;
+  bot.telegram.sendMessage(
+    ctx.chat.id,
+    `Hola ${nombre}, bienvenido!
+Abajo vas a encontrar mis funciones.`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Compra", callback_data: "compra" },
+            { text: "Promedio", callback_data: "promedio" },
+            { text: "Venta", callback_data: "venta" },
+          ],
+        ],
+      },
+      reply_markup: {
+        keyboard: [
+          [{ text: "/compra" }, { text: "/promedio" }, { text: "/venta" }],
+        ],
+        resize_keyboard: true,
+      },
+    }
+  );
+});
 
 bot.help((ctx) => {
-    bot.telegram.sendMessage(ctx.chat.id, `Hola, soy el Dolar bot!
+  bot.telegram.sendMessage(
+    ctx.chat.id,
+    `Hola, soy el Dolar bot!
 Mi proposito es darte la cotizacion del dolar en el momento.
 Abajo vas a encontrar mis funciones.`,
-        {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        { text: 'Compra', callback_data: 'compra' },
-                        { text: 'Promedio', callback_data: 'promedio' },
-                        { text: 'Venta', callback_data: 'venta' },
-                    ]
-                ]
-            }
-        })
-}
-);
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "Compra", callback_data: "compra" },
+            { text: "Promedio", callback_data: "promedio" },
+            { text: "Venta", callback_data: "venta" },
+          ],
+        ],
+      },
+    }
+  );
+});
 
 //? Custom commands
 
-bot.command('promedio', (ctx) => {
-    ctx.reply(`Hola!
-La cotiazcion promedio es 💵 ${avg}`);
-})
-bot.command('venta', (ctx) => {
-    ctx.reply(`Hola!
-La cotiazcion de venta es 💵 ${venta}`);
-})
-bot.command('compra', (ctx) => {
-    ctx.reply(`Hola!
-La cotiazcion de compra es 💵 ${compra}`);
-})
+bot.command("p", async (ctx) => {
+  await getCotizacion().then(
+    ctx.reply("asd" + values[1]));
+    /*ctx.reply(`Hola!
+        La cotiazcion promedio es 💵 ${avg}`)*/
+  });
 
+bot.command("venta", (ctx) => {
+  ctx.reply(`Hola!
+La cotiazcion de venta es 💵 ${values[0]}`);
+});
+bot.command("compra", (ctx) => {
+  ctx.reply(`Hola!
+La cotiazcion de compra es 💵 ${compra}`);
+});
 
 //? Bot actions
 
-bot.action("compra", ctx => {
-    ctx.reply(`Hola!
+bot.action("compra", (ctx) => {
+  ctx.reply(`Hola!
     La cotiazcion de compra es 💵 ${compra}`);
-})
-bot.action("promedio", ctx => {
-    ctx.reply(`Hola!
+});
+bot.action("promedio", (ctx) => {
+  ctx.reply(`Hola!
     La cotiazcion promedio es 💵 ${avg}`);
-})
-bot.action("venta", ctx => {
-    ctx.reply(`Hola!
+});
+bot.action("venta", (ctx) => {
+  ctx.reply(`Hola!
     La cotiazcion de venta es 💵 ${venta}`);
-})
+});
 
 
 getCotizacion();
 bot.launch();
-
-
