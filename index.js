@@ -4,7 +4,7 @@ const axios = require("axios");
 //Api key
 const bot = new Telegraf("5901908240:AAGNVy0wUXRO8ugW25B9qraRWY5ZxN4V_HM");
 
-let values = [(compra = 0), (venta = 0), (avg = 0)];
+let values = [(compra = null), (venta = null), (avg = null)];
 
 const setValues = (json) => {
   values[0] = json.value_buy;
@@ -26,6 +26,7 @@ const getCotizacion = async () => {
 //? Default commands
 
 bot.start(async (ctx) => {
+  getCotizacion();
   const nombre = ctx.message.from.first_name;
   bot.telegram.sendMessage(
     ctx.chat.id,
@@ -74,15 +75,20 @@ Abajo vas a encontrar mis funciones.`,
 //? Custom commands
 
 bot.command("p", async (ctx) => {
+  try{
   await getCotizacion().then(
-    ctx.reply("asd" + values[1]));
+  ctx.reply("asd\n" + values[0]));
+  } catch (error) {
+    console.log(error);
+  }
     /*ctx.reply(`Hola!
         La cotiazcion promedio es 💵 ${avg}`)*/
-  });
+});
 
-bot.command("venta", (ctx) => {
+bot.command("venta",async (ctx) => {
+  await getCotizacion().then(
   ctx.reply(`Hola!
-La cotiazcion de venta es 💵 ${values[0]}`);
+La cotiazcion de venta es 💵 ${values[0]}`));
 });
 bot.command("compra", (ctx) => {
   ctx.reply(`Hola!
@@ -105,5 +111,4 @@ bot.action("venta", (ctx) => {
 });
 
 
-getCotizacion();
 bot.launch();
